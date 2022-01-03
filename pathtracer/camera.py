@@ -44,6 +44,7 @@ class Camera:
             return v / norm
 
         origin = np.matmul(self.matrix, np.array([0, 0, 0, 1]))
+        origin = origin[:3] / origin[3]
 
         for x in np.arange(self.image_width):
             for y in np.arange(self.image_height):
@@ -56,6 +57,7 @@ class Camera:
                     self.fov / 2 * np.pi / 180
                 )
                 direction = np.matmul(self.matrix, np.array([px, py, -1, 1]))
+                direction = direction[:3] / direction[3]
                 direction = normalize(direction - origin)
 
                 rays.append(

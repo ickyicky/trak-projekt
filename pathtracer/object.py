@@ -6,5 +6,6 @@ class Object:
     def __init__(self, geometry):
         self._geometry = geometry
 
-    def get_materials(self):
-        return self.geometry.materialnodebysymbol
+    @property
+    def primitives(self):
+        return self._geometry.original.primitives
