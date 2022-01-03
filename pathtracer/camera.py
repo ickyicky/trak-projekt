@@ -1,5 +1,5 @@
 from .ray import Ray
-from typing import List
+from typing import List, Tuple
 import numpy as np
 
 
@@ -11,7 +11,12 @@ class Camera:
 
     def __init__(self, camera, resolution):
         self._camera = camera
-        self.resolution = resolution
+        self.image_height = resolution
+        self.image_width = int(resolution * self.aspect_ratio)
+
+    @property
+    def resolution(self):
+        return (self.image_width, self.image_height)
 
     @property
     def matrix(self):
@@ -25,10 +30,11 @@ class Camera:
     def aspect_ratio(self):
         return self._camera.aspect_ratio
 
-    def generate_initial_rays(self) -> List[Ray]:
-        image_height = self.resolution
-        image_width = int(self.resolution * self.aspect_ratio)
-
+    def generate_initial_rays(self) -> List[Tuple[Tuple[int, int], Ray]]:
+        """
+        Generate initial rays, return list of tuples:
+            (coords of ray, ray)
+        """
         rays = []
 
         def normalize(v):
@@ -39,23 +45,26 @@ class Camera:
 
         origin = np.matmul(self.matrix, np.array([0, 0, 0, 1]))
 
-        for x in np.arange(image_width):
-            for y in np.arange(image_height):
+        for x in np.arange(self.image_width):
+            for y in np.arange(self.image_height):
                 px = (
-                    (2 * ((x + 0.5) / image_width) - 1)
+                    (2 * ((x + 0.5) / self.image_width) - 1)
                     * np.tan(self.fov / 2 * np.pi / 180)
                     * self.aspect_ratio
                 )
-                py = (1 - 2 * ((y + 0.5) / image_width)) * np.tan(
+                py = (1 - 2 * ((y + 0.5) / self.image_height)) * np.tan(
                     self.fov / 2 * np.pi / 180
                 )
                 direction = np.matmul(self.matrix, np.array([px, py, -1, 1]))
                 direction = normalize(direction - origin)
 
                 rays.append(
-                    Ray(
-                        origin=origin,
-                        direction=direction,
+                    (
+                        (x, y),
+                        Ray(
+                            origin=origin,
+                            direction=direction,
+                        ),
                     ),
                 )
 

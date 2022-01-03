@@ -1,8 +1,22 @@
 from dataclasses import dataclass
+from PIL import Image
+import numpy as np
 
 
-@dataclass
-class Color:
-    R: int
-    G: int
-    B: int
+def color(r, g, b) -> np.array:
+    return np.array([r, g, b])
+
+
+class Bitmap:
+    """
+    Wrapper around pillow image and numpy array
+    """
+
+    def __init__(self, x, y):
+        self.image = np.array(Image.new("RGB", (y, x)))
+
+    def __getitem__(self, key):
+        return self.image.__getitem__(key)
+
+    def __setitem__(self, key, value):
+        return self.image.__setitem__(key, value)
