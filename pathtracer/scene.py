@@ -10,9 +10,10 @@ class Scene:
     scene.
     """
 
-    def __init__(self, collada: Collada):
+    def __init__(self, collada: Collada, resolution: int):
         self._collada = collada
         self._scene = collada.scene
+        self.resolution = resolution
         self.camera = self.load_camera()
         self.objects = self.load_objects()
         self.lights = self.load_lights()
@@ -23,10 +24,12 @@ class Scene:
         """
         cameras = list(self._scene.objects("camera"))
         if len(cameras) != 1:
-            raise Exception("Invalid amount of cameras in the image")
+            raise Exception(
+                "Invalid amount of cameras in the image, use one for gods sake!"
+            )
 
         camera = cameras[0]
-        return Camera(camera)
+        return Camera(camera, self.resolution)
 
     def load_objects(self) -> List[Object]:
         """
@@ -43,9 +46,9 @@ class Scene:
         return lights
 
     @classmethod
-    def load(self, path: str) -> "Scene":
+    def load(self, path: str, resolution: int) -> "Scene":
         """
         Load scene
         """
-        scene = Scene(Collada(path))
+        scene = Scene(Collada(path), resolution)
         return scene

@@ -26,20 +26,22 @@ class MainProcedure:
     def __init__(
         self,
         scene_file: str,
+        resolution: int,
         sampler_cls: Type,
         environment_map: str,
     ):
         """
         Load configuration
         """
-        self.scene = Scene.load(scene_file)
+        self.scene = Scene.load(scene_file, resolution)
         self.config = Configuration
         # TODO load environment map and sampler
 
-    def render(self) -> None:
+    def render(self, output_file) -> None:
         """
         Run path tracing render
         """
         from .path_trace import path_trace
 
-        return path_trace(self)
+        image = path_trace(self)
+        # save image here
