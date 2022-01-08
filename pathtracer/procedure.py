@@ -27,7 +27,6 @@ class MainProcedure:
         self,
         scene_file: str,
         resolution: int,
-        sampler_cls: Type,
         environment_map: str,
     ):
         """
@@ -44,4 +43,4 @@ class MainProcedure:
         from .path_trace import path_trace
 
         image = path_trace(self)
-        # save image here
+        image.save(output_file)

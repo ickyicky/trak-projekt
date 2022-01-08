@@ -1,12 +1,14 @@
 if __name__ == "__main__":
     import argparse
 
-    from .samplers import Samplers
+    from .samplers import AVALIBE_SAMPLERS, configure
     from .procedure import MainProcedure
 
     parser = argparse.ArgumentParser()
     parser.add_argument("scene", help="Scene file")
-    parser.add_argument("algorithm", choices=Samplers.keys(), help="Sampling algorithm")
+    parser.add_argument(
+        "algorithm", choices=AVALIBE_SAMPLERS.keys(), help="Sampling algorithm"
+    )
     parser.add_argument("environment", help="Environment map")
     parser.add_argument("output", help="Output file")
     parser.add_argument(
@@ -16,9 +18,11 @@ if __name__ == "__main__":
     )
 
     args = parser.parse_args()
+
+    configure(args.algorithm, {})
+
     MainProcedure(
         scene_file=args.scene,
         resolution=args.resolution,
-        sampler_cls=Samplers[args.algorithm],
         environment_map=args.environment,
     ).render(args.output)

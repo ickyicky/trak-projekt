@@ -2,6 +2,7 @@ from .procedure import MainProcedure
 from .ray import Ray
 from .collision import get_collision
 from .bitmap import color, Bitmap
+from .samplers import sampler_in_hemisphere
 
 import numpy as np
 
@@ -36,22 +37,24 @@ def trace_ray(
     if hit is None:
         return background(procedure, ray)
 
-    reflected_ray = Ray(
+    new_ray = Ray(
         origin=hit.coords,
         direction=sampler_in_hemisphere(hit.normal),
     )
-    value = trace_ray(procedure, reflected_ray, depth + 1)
-    return hit.hit_object.value + value * brdf
 
+    probability = 1 / (2 * np.pi)
 
-def sampler_in_hemisphere(
-    normal: np.array,
-) -> np.array:
-    """
-    Generates random direction for new
-    ray
-    """
-    pass
+    hit_material = procedure.scene.get_material(hit.material_id)
+
+    emmitance = hit_material.emmitance
+
+    cos_theta = np.dot(new_ray.direction, hit.normal)
+    brdf = hit_material.reflectance / np.pi
+
+    incoming = trace_ray(procedure, new_ray, depth + 1)
+
+    # RENDER EQUATION
+    return emmitance + (incoming * brdf * cos_theta / probability)
 
 
 def background(

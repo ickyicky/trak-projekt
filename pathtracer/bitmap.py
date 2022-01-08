@@ -20,3 +20,7 @@ class Bitmap:
 
     def __setitem__(self, key, value):
         return self.image.__setitem__(key, value)
+
+    def save(self, output_file):
+        im = Image.fromarray(self.image * 255)
+        im.save(output_file)

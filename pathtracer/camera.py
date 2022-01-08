@@ -47,12 +47,12 @@ class Camera:
         origin = origin[:3] / origin[3]
 
         for x in np.arange(self.image_width):
+            px = (
+                (2 * ((x + 0.5) / self.image_width) - 1)
+                * np.tan(self.fov / 2 * np.pi / 180)
+                * self.aspect_ratio
+            )
             for y in np.arange(self.image_height):
-                px = (
-                    (2 * ((x + 0.5) / self.image_width) - 1)
-                    * np.tan(self.fov / 2 * np.pi / 180)
-                    * self.aspect_ratio
-                )
                 py = (1 - 2 * ((y + 0.5) / self.image_height)) * np.tan(
                     self.fov / 2 * np.pi / 180
                 )

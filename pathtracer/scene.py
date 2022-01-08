@@ -1,7 +1,8 @@
 from collada import Collada
-from typing import List, Tuple, Any
+from typing import List, Tuple, Any, Dict
 from .object import Object
 from .camera import Camera
+from .material import Material
 
 
 class Scene:
@@ -17,6 +18,7 @@ class Scene:
         self.camera = self.load_camera()
         self.objects = self.load_objects()
         self.lights = self.load_lights()
+        self.materials = self.load_materials()
 
     def load_camera(self) -> Camera:
         """
@@ -37,6 +39,18 @@ class Scene:
         """
         objects = list(self._scene.objects("geometry"))
         return [Object(g) for g in objects]
+
+    def load_materials(self) -> Dict:
+        """
+        Load all objects from the scene
+        """
+        return {x.id: Material(x) for x in self._collada.materials}
+
+    def get_material(self, id_) -> Any:
+        """
+        Get material by name
+        """
+        return self.materials[id_]
 
     def load_lights(self) -> Any:  # TODO
         """

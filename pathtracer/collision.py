@@ -1,46 +1,91 @@
 from .procedure import MainProcedure
 from .ray import Ray
-from dataclasses import dataclass
 import numpy as np
-from typing import Any
+from typing import Any, Optional
 
 
-@dataclass
 class Hit:
-    coords: np.array
-    hit_object: Any
+    def __init__(
+        self,
+        triangle: Any,
+        u: float,
+        v: float,
+        distance: float,
+        hit_object: Any,
+        ray: Ray,
+    ):
+        self.u = u
+        self.v = v
+        self.distance = distance
+        self.hit_object = hit_object
+        self.ray = ray
+        self.triangle = triangle
+        self._normal = None
+        self._coords = None
+
+    def _calculate_normal(self):
+        """
+        TODO right now that just
+        copies triangle normal
+        """
+        self._normal = self.triangle.normals[0]
+
+    def _calculate_coords(self):
+        self._coords = self.ray.origin + self.ray.direction * self.distance
+
+    @property
+    def normal(self):
+        if self._normal is None:
+            self._calculate_normal()
+
+        return self._normal
+
+    @property
+    def coords(self):
+        if self._coords is None:
+            self._calculate_coords()
+
+        return self._coords
+
+    @property
+    def material_id(self):
+        return self.triangle.material
 
 
 def get_collision(
     ray: Ray,
     procedure: MainProcedure,
-) -> Hit:
+) -> Optional[Hit]:
     """
     Calculates collision for given ray
-    on procedures scene
+    on procedures scene. Returns hit object.
     """
-    hit_primitive = None
-    hit_t = None
-    hit_v = None
+    hit = None
 
     for obj in procedure.scene.objects:
         for primitive in obj.primitives:
-            for i in range(len(primitive)):
-                triangle = primitive[i]
-                hits, vals = intersect(ray, triangle)
-                if hits and vals[0] < hit_t:
-                    hit_t = vals[0]
-                    hit_v = vals[2]
-                    hit_primitive = primitive
+            for triangle in primitive:
+                hit_ = intersect(ray, triangle, obj)
+                if hit_ and (hit is None or hit_.distance < hit.distance):
+                    hit = hit_
 
-    return Hit(hit_v, hit_primitive)
+    return hit
 
 
-def intersect(ray: Ray, triangle) -> int:
+def intersect(ray: Ray, triangle, object_) -> Optional[Hit]:
     """
-    Calculates if ray will hit the triangle
+    Calculates if ray will hit the triangle.
+
+    Returns tuple:
+        (
+            did_ray_hit_something: bool,
+            (
+                time: float,
+                u: np.array[float],
+                v: np.array[float],
+            ),
+        )
     """
-    null_inter = np.array([np.nan, np.nan, np.nan])
 
     # break down triangle into the individual points
     v1, v2, v3 = triangle.vertices
@@ -53,21 +98,29 @@ def intersect(ray: Ray, triangle) -> int:
     det = edge1.dot(pvec)
 
     if abs(det) < eps:  # no intersection
-        return False, null_inter
+        return None
+
     inv_det = 1.0 / det
     tvec = ray.origin - v1
     u = tvec.dot(pvec) * inv_det
 
     if u < 0.0 or u > 1.0:  # if not intersection
-        return False, null_inter
+        return None
 
     qvec = np.cross(tvec, edge1)
     v = ray.direction.dot(qvec) * inv_det
     if v < 0.0 or u + v > 1.0:  # if not intersection
-        return False, null_inter
+        return None
 
     t = edge2.dot(qvec) * inv_det
     if t < eps:
-        return False, null_inter
+        return None
 
-    return True, np.array([t, u, v])
+    return Hit(
+        triangle=triangle,
+        ray=ray,
+        distance=t,
+        u=u,
+        v=v,
+        hit_object=object_,
+    )
