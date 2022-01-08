@@ -4,7 +4,8 @@ from .scene import Scene
 
 
 class Configuration:
-    max_depth = 16
+    max_depth = 64
+    samples = 100
 
 
 class MainProcedure:
@@ -34,6 +35,8 @@ class MainProcedure:
         """
         self.scene = Scene.load(scene_file, resolution)
         self.config = Configuration
+        self.scene_file = scene_file
+        self.resolution = resolution
         # TODO load environment map and sampler
 
     def render(self, output_file) -> None:
