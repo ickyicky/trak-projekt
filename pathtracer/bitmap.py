@@ -1,6 +1,6 @@
-from dataclasses import dataclass
 from PIL import Image
 import numpy as np
+import matplotlib.pyplot as plt
 
 
 def color(r, g, b) -> np.array:
@@ -22,5 +22,7 @@ class Bitmap:
         return self.image.__setitem__(key, value)
 
     def save(self, output_file):
-        im = Image.fromarray(self.image * 255)
+        im = Image.fromarray((self.image))
         im.save(output_file)
+        plt.imshow(self.image)
+        plt.show()

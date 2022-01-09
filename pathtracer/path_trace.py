@@ -26,6 +26,9 @@ def path_trace(procedure: MainProcedure) -> Bitmap:
             trace_ray_task, (ray, procedure.scene_file, procedure.resolution)
         )
 
+    pool.close()
+    pool.join()
+
     for x, y in tasks.keys():
         bitmap[x, y] = tasks[(x, y)].get()
 
@@ -45,9 +48,9 @@ def trace_ray_task(
     result = np.array([0.0, 0.0, 0.0])
 
     for sample in range(samples):
-        result += trace_ray(procedure, ray) / samples
+        result += trace_ray(procedure, ray)
 
-    return result
+    return (result / samples * 255).astype("uint8")
 
 
 def trace_ray(

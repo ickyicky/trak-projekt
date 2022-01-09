@@ -4,8 +4,8 @@ from .scene import Scene
 
 
 class Configuration:
-    max_depth = 64
-    samples = 100
+    max_depth = 4
+    samples = 1
 
 
 class MainProcedure:
