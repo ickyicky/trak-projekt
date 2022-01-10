@@ -1,11 +1,13 @@
 from typing import Type
+from dataclasses import dataclass
 
 from .scene import Scene
 
 
+@dataclass
 class Configuration:
-    max_depth = 2
-    samples = 1
+    max_depth: int
+    samples: int
 
 
 class MainProcedure:
@@ -26,6 +28,7 @@ class MainProcedure:
 
     def __init__(
         self,
+        config: Configuration,
         scene_file: str,
         resolution: int,
         environment_map: str,
@@ -33,11 +36,17 @@ class MainProcedure:
         """
         Load configuration
         """
-        self.scene = Scene.load(scene_file, resolution)
-        self.config = Configuration
+        self.config = config
         self.scene_file = scene_file
         self.resolution = resolution
+        self.scene = None
         # TODO load environment map and sampler
+
+    def load_scene(self):
+        self.scene = Scene.load(self.scene_file, self.resolution)
+
+    def free_scene(self):
+        self.scene = None
 
     def render(self, output_file) -> None:
         """
