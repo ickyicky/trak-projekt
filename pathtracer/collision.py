@@ -49,7 +49,7 @@ class Hit:
 
     @property
     def material_id(self):
-        return self.triangle.material
+        return self.triangle.material.id
 
 
 def get_collision(

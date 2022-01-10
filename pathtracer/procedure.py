@@ -4,7 +4,7 @@ from .scene import Scene
 
 
 class Configuration:
-    max_depth = 4
+    max_depth = 2
     samples = 1
 
 

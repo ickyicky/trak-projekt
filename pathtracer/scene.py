@@ -15,10 +15,10 @@ class Scene:
         self._collada = collada
         self._scene = collada.scene
         self.resolution = resolution
-        self.camera = self.load_camera()
-        self.objects = self.load_objects()
-        self.lights = self.load_lights()
-        self.materials = self.load_materials()
+        self.camera = None
+        self.objects = None
+        self.lights = None
+        self.materials = None
 
     def load_camera(self) -> Camera:
         """
@@ -31,20 +31,20 @@ class Scene:
             )
 
         camera = cameras[0]
-        return Camera(camera, self.resolution)
+        self.camera = Camera(camera, self.resolution)
 
     def load_objects(self) -> List[Object]:
         """
         Load all objects from the scene
         """
         objects = list(self._scene.objects("geometry"))
-        return [Object(g) for g in objects]
+        self.objects = [Object(g) for g in objects]
 
     def load_materials(self) -> Dict:
         """
         Load all objects from the scene
         """
-        return {x.id: Material(x) for x in self._collada.materials}
+        self.materials = {x.id: Material(x) for x in self._collada.materials}
 
     def get_material(self, id_) -> Any:
         """
@@ -57,7 +57,7 @@ class Scene:
         Load all lights
         """
         lights = list(self._scene.objects("light"))
-        return lights
+        self.lights = lights
 
     @classmethod
     def load(self, path: str, resolution: int) -> "Scene":

@@ -13,7 +13,7 @@ class Bitmap:
     """
 
     def __init__(self, x, y):
-        self.image = np.array(Image.new("RGB", (y, x)))
+        self.image = np.array(Image.new("RGB", (x, y)))
 
     def __getitem__(self, key):
         return self.image.__getitem__(key)
