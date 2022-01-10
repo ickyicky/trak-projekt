@@ -92,9 +92,7 @@ def trace_ray(
     incoming = trace_ray(procedure, new_ray, depth + 1)
 
     # RENDER EQUATION
-    return emmitance + (incoming * brdf * cos_theta / probability) / (
-        (hit.distance * 10) ** 2
-    )
+    return emmitance + (incoming * brdf * cos_theta / probability)
 
 
 def background(
