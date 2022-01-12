@@ -64,11 +64,15 @@ def get_collision(
 
     for obj in procedure.scene.objects:
         if hits_bounding_box(ray, obj):
+            # ray inside object
             for primitive in obj.primitives:
                 if hits_bounding_box(ray, primitive):
+                    # ray inside object's primitive
                     for triangle in primitive.triangles:
+                        # checking every triangle
                         hit_ = intersect(ray, triangle, obj)
                         if hit_ and (hit is None or hit_.distance < hit.distance):
+                            # most close hit
                             hit = hit_
 
     return hit
