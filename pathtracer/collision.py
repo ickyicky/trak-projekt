@@ -83,7 +83,12 @@ def hits_bounding_box(ray: Ray, obj: Any) -> bool:
     Checks if ray hits bounding box of object
     """
     box = obj.bounding_box
-    return True
+    box_matrix = np.array([box.lower_bound, box.upper_bound])
+    t = np.sort(np.matrix.transpose((box_matrix - ray.origin) / ray.direction))
+    t_s = np.max(t[:, 0])
+    t_e = np.min(t[:, 1])
+
+    return all(t[:, 1] >= 0.0) and t_e >= t_s
 
 
 def intersect(ray: Ray, triangle, object_) -> Optional[Hit]:

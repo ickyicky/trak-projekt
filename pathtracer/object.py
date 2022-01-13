@@ -4,12 +4,8 @@ from dataclasses import dataclass
 
 @dataclass
 class BoundingBox:
-    x1: int
-    x2: int
-    y1: int
-    y2: int
-    z1: int
-    z2: int
+    lower_bound: np.array
+    upper_bound: np.array
 
 
 class Primitive:
@@ -32,15 +28,11 @@ class Primitive:
         return self._bounding_box
 
     def generate_bounding_box(self):
-        vertices = [v for v in self._primitive.vertex]
+        vertices = np.array([v for v in self._primitive.vertex])
 
         self._bounding_box = BoundingBox(
-            x1=min((v[0] for v in vertices)),
-            x2=max((v[0] for v in vertices)),
-            y1=min((v[1] for v in vertices)),
-            y2=max((v[1] for v in vertices)),
-            z1=min((v[2] for v in vertices)),
-            z2=max((v[2] for v in vertices)),
+            lower_bound=vertices.min(axis=0),
+            upper_bound=vertices.max(axis=0),
         )
 
 
@@ -69,13 +61,10 @@ class Object:
         return self._bounding_box
 
     def generate_bounding_box(self):
-        boxes = [p.bounding_box for p in self.primitives]
+        upper = np.array([p.bounding_box.upper_bound for p in self.primitives])
+        lower = np.array([p.bounding_box.lower_bound for p in self.primitives])
 
         self._bounding_box = BoundingBox(
-            x1=min((b.x1 for b in boxes)),
-            x2=max((b.x1 for b in boxes)),
-            y1=min((b.y1 for b in boxes)),
-            y2=max((b.y1 for b in boxes)),
-            z1=min((b.z1 for b in boxes)),
-            z2=max((b.z1 for b in boxes)),
+            lower_bound=lower.min(axis=0),
+            upper_bound=upper.max(axis=0),
         )
