@@ -13,16 +13,20 @@ class Material:
         """
         idk if we can just do it like that
         """
-        return (self._material.effect.emission or ZEROES)[:3]
+        return np.array((self._material.effect.emission or ZEROES)[:3])
 
     @property
     def reflectance(self):
-        return (self._material.effect.reflectivity or ZEROES)[:3]
+        return self._material.effect.reflectivity or 0.0
 
     @property
     def diffusion(self):
-        return (self._material.effect.diffuse or ZEROES)[:3]
+        return np.array((self._material.effect.diffuse or ZEROES)[:3])
 
     @property
     def index_of_refraction(self):
         return self._material.effect.index_of_refraction
+
+    @property
+    def shiness(self):
+        return self._material.effect.shininess or 0.0

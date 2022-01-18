@@ -95,20 +95,13 @@ def trace_ray(
 
     cos_theta = np.dot(new_ray.direction, hit.normal)
 
-    brdf = hit_material.reflectance + hit_material.diffusion
+    brdf = (hit_material.diffusion * cos_theta) + (  # diffusion brdf
+        hit_material.reflectance
+        * (np.dot(ray.direction, new_ray.direction) ** hit_material.shiness)
+    )  # reflectance brdf
 
     incoming = trace_ray(procedure, new_ray, depth + 1)
-    """
-    if any(incoming):
-        print(
-            {
-                "incoming": incoming,
-                "brdf": brdf,
-                "cos_theta": cos_theta,
-                "probability": probability,
-            }
-        )
-    """
+
     # RENDER EQUATION
     return emmitance + (incoming * brdf * cos_theta / probability)
 
