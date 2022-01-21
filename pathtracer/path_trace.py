@@ -2,7 +2,7 @@ from .procedure import MainProcedure
 from .ray import Ray
 from .collision import get_collision
 from .bitmap import color, Bitmap
-from .samplers import sampler_in_hemisphere
+from .samplers import sampler_factory, Sampler
 
 from multiprocessing import Pool
 import numpy as np
@@ -12,6 +12,13 @@ from typing import List, Tuple
 
 PROCESS_PROCEDURE = None
 
+def hemisphere_mapping(point : np.array, normal : np.array) -> np.array:
+    point = point / (np.linalg.norm(point) + np.finfo(float).eps)
+
+    if np.dot(point, normal) < 0:
+        return -point
+    else:
+        return point
 
 def path_trace(procedure: MainProcedure) -> Bitmap:
     """
@@ -59,8 +66,10 @@ def trace_ray_task(
     samples = PROCESS_PROCEDURE.config.samples
     result = np.array([0.0, 0.0, 0.0])
 
-    for sample in range(samples):
-        result += trace_ray(PROCESS_PROCEDURE, ray)
+    sampler = sampler_factory(PROCESS_PROCEDURE.config)
+
+    for _ in range(samples):
+        result += trace_ray(PROCESS_PROCEDURE, ray, sampler)
 
     result = (result / samples * 255).astype("uint8")
     return result
@@ -69,6 +78,7 @@ def trace_ray_task(
 def trace_ray(
     procedure: MainProcedure,
     ray: Ray,
+    sampler : Sampler,
     depth: int = 0,
 ) -> np.array:
     """
@@ -84,7 +94,7 @@ def trace_ray(
 
     new_ray = Ray(
         origin=hit.coords,
-        direction=sampler_in_hemisphere(hit.normal),
+        direction=hemisphere_mapping(next(sampler), hit.normal),
     )
 
     probability = 1 / (2 * np.pi)
@@ -100,7 +110,7 @@ def trace_ray(
         * (np.dot(ray.direction, new_ray.direction) ** hit_material.shiness)
     )  # reflectance brdf
 
-    incoming = trace_ray(procedure, new_ray, depth + 1)
+    incoming = trace_ray(procedure, new_ray, sampler, depth + 1)
 
     # RENDER EQUATION
     return emmitance + (incoming * brdf * cos_theta / probability)
