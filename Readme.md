@@ -24,3 +24,14 @@ W programie powinny znaleźć się m.in.:
 - światła są obiektami emitującymi światło, nie obiektami typu światło
 - interfejs konsolowy
 - render do pliku + wyskakujące GUI z efektem
+
+## Wizualizacja
+Przykładową wizualizację punktów losowanych ze sfery można zobaczyć przy pomocy polecenia.
+```
+python3 -m pathtracer.test_samplers -a statified
+```
+
+Przykładowy wynik programu można uzyskać przy pomocy polecenia:
+```
+python3 -m pathtracer doc/test.dae random NONE output.png 200 -s 20
+```

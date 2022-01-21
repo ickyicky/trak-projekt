@@ -13,8 +13,6 @@ from typing import List, Tuple
 PROCESS_PROCEDURE = None
 
 def hemisphere_mapping(point : np.array, normal : np.array) -> np.array:
-    point = point / (np.linalg.norm(point) + np.finfo(float).eps)
-
     if np.dot(point, normal) < 0:
         return -point
     else:
