@@ -1,13 +1,7 @@
 from typing import Type
-from dataclasses import dataclass
 
+from .samplers import Configuration
 from .scene import Scene
-
-
-@dataclass
-class Configuration:
-    max_depth: int
-    samples: int
 
 
 class MainProcedure:
