@@ -60,6 +60,7 @@ def trace_ray_task(
     if PROCESS_PROCEDURE is None:
         PROCESS_PROCEDURE = procedure_template
         PROCESS_PROCEDURE.load_scene()
+        PROCESS_PROCEDURE.load_background()
         PROCESS_PROCEDURE.scene.load_objects()
         PROCESS_PROCEDURE.scene.load_materials()
 
@@ -124,4 +125,4 @@ def background(
     Gets environment map value for the ray
     or returns black other way
     """
-    return color(0, 0, 0)
+    return procedure.background(ray)

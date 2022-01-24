@@ -2,6 +2,8 @@ from abc import ABC
 from dataclasses import dataclass
 import math
 import numpy as np
+from .bitmap import color
+from typing import Optional
 
 
 @dataclass
@@ -9,6 +11,8 @@ class Configuration:
     algorithm: str
     max_depth: int
     samples: int
+    background_color: Optional[color]
+    environment_map: Optional[str]
 
 
 class Sampler(ABC):

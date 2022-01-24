@@ -2,6 +2,7 @@ from typing import Type
 
 from .samplers import Configuration
 from .scene import Scene
+from .background import Background
 
 
 class MainProcedure:
@@ -25,7 +26,6 @@ class MainProcedure:
         config: Configuration,
         scene_file: str,
         resolution: int,
-        environment_map: str,
     ):
         """
         Load configuration
@@ -34,7 +34,7 @@ class MainProcedure:
         self.scene_file = scene_file
         self.resolution = resolution
         self.scene = None
-        # TODO load environment map and sampler
+        self.background = None
 
     def load_scene(self):
         self.scene = Scene.load(self.scene_file, self.resolution)
@@ -50,3 +50,6 @@ class MainProcedure:
 
         image = path_trace(self)
         image.save(output_file)
+
+    def load_background(self):
+        self.background = Background(self.config)
