@@ -3,6 +3,7 @@ from .ray import Ray
 from .collision import get_collision
 from .bitmap import color, Bitmap
 from .samplers import sampler_factory, Sampler
+from .utils import print_progress_bar
 
 from multiprocessing import Pool
 import numpy as np
@@ -41,9 +42,15 @@ def path_trace(procedure: MainProcedure) -> Bitmap:
 
     pool.close()
     pool.join()
+    total = len(tasks)
 
-    for x, y in tasks.keys():
+    for i, (x, y) in enumerate(tasks.keys()):
         bitmap[y, x] = tasks[(x, y)].get()
+        print_progress_bar(
+            iteration=i,
+            total=total,
+            prefix="Rendering image...",
+        )
 
     return bitmap
 
