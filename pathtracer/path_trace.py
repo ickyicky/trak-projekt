@@ -12,11 +12,13 @@ from typing import List, Tuple
 
 PROCESS_PROCEDURE = None
 
-def hemisphere_mapping(point : np.array, normal : np.array) -> np.array:
+
+def hemisphere_mapping(point: np.array, normal: np.array) -> np.array:
     if np.dot(point, normal) < 0:
         return -point
     else:
         return point
+
 
 def path_trace(procedure: MainProcedure) -> Bitmap:
     """
@@ -76,7 +78,7 @@ def trace_ray_task(
 def trace_ray(
     procedure: MainProcedure,
     ray: Ray,
-    sampler : Sampler,
+    sampler: Sampler,
     depth: int = 0,
 ) -> np.array:
     """

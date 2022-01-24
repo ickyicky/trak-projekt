@@ -3,11 +3,13 @@ from dataclasses import dataclass
 import math
 import numpy as np
 
+
 @dataclass
 class Configuration:
-    algorithm : str
+    algorithm: str
     max_depth: int
     samples: int
+
 
 class Sampler(ABC):
     def __init__(self, n=1):
@@ -36,12 +38,13 @@ class Sampler(ABC):
         self._data = np.vstack([x, y, z]).T
         assert self._data.shape == (self._n, 3)
         assert np.allclose(np.linalg.norm(self._data, axis=1), 1)
-    
+
     def __next__(self):
-        assert self._index < self._n , "no samples left"
+        assert self._index < self._n, "no samples left"
         i = self._index
         self._index += 1
         return self._data[i, :]
+
 
 class RandomSampler(Sampler):
     def __init__(self, n=1):
@@ -69,6 +72,7 @@ def halton(b, steps):
         A[i] = n / d
     return A
 
+
 class StratifiedSampler(Sampler):
     def __init__(self, n=1):
         Sampler.__init__(self, n)
@@ -78,11 +82,12 @@ class StratifiedSampler(Sampler):
             kx += 1
             ky += 1
 
-        A = np.mgrid[0:1:(1/kx), 0:1:(1/ky)]
-        A[0, :, :] = A[0, :, :] + np.random.rand(1, kx, ky)/kx
-        A[1, :, :] = A[1, :, :] + np.random.rand(1, kx, ky)/ky
+        A = np.mgrid[0 : 1 : (1 / kx), 0 : 1 : (1 / ky)]
+        A[0, :, :] = A[0, :, :] + np.random.rand(1, kx, ky) / kx
+        A[1, :, :] = A[1, :, :] + np.random.rand(1, kx, ky) / ky
 
         self.project_to_sphere(A.reshape(2, -1).T[:n, :])
+
 
 class MultijitteredSampler(Sampler):
     def __init__(self, n=1):
@@ -93,12 +98,12 @@ class MultijitteredSampler(Sampler):
             kx += 1
             ky += 1
 
-        A = np.mgrid[0:1:(1/kx), 0:1:(1/ky)]
+        A = np.mgrid[0 : 1 : (1 / kx), 0 : 1 : (1 / ky)]
         B = np.random.rand(2, kx, ky)
         B[0, :, :] = B[0, :, :] + np.arange(0, ky).reshape(1, 1, ky)
         B[1, :, :] = B[1, :, :] + np.arange(0, kx).reshape(1, kx, 1)
 
-        A = A + B/(kx * ky)
+        A = A + B / (kx * ky)
 
         # Shuffle
         for i in range(kx):
@@ -109,10 +114,12 @@ class MultijitteredSampler(Sampler):
 
         self.project_to_sphere(A.reshape(2, -1).T[:n, :])
 
+
 class LowDiscrepancySeriesSampler(Sampler):
     """
     Requires more samples (>= 20).
     """
+
     def __init__(self, n=1):
         Sampler.__init__(self, n)
         self.project_to_sphere(np.hstack([halton(2, n), halton(3, n)]))
@@ -125,7 +132,8 @@ AVAILABLE_SAMPLERS = {
     "low_discrepancy": LowDiscrepancySeriesSampler,
 }
 
-def sampler_factory(config : Configuration) -> Sampler:
+
+def sampler_factory(config: Configuration) -> Sampler:
     assert config.algorithm in AVAILABLE_SAMPLERS, "invalid sampler name"
     n = config.samples * (config.max_depth + 1)
     return AVAILABLE_SAMPLERS[config.algorithm](n)

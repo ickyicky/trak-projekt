@@ -26,7 +26,9 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     MainProcedure(
-        config=Configuration(algorithm=args.algorithm, max_depth=args.max_depth, samples=args.samples),
+        config=Configuration(
+            algorithm=args.algorithm, max_depth=args.max_depth, samples=args.samples
+        ),
         scene_file=args.scene,
         resolution=args.resolution,
         environment_map=args.environment,
