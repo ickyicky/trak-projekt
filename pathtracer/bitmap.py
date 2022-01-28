@@ -24,5 +24,5 @@ class Bitmap:
     def save(self, output_file):
         im = Image.fromarray((self.image))
         im.save(output_file)
-        plt.imshow(self.image)
-        plt.show()
+        # plt.imshow(self.image)
+        # plt.show()
